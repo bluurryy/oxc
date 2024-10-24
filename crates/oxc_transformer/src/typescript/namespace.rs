@@ -88,7 +88,7 @@ impl<'a, 'ctx> Traverse<'a> for TypeScriptNamespace<'a, 'ctx> {
                                 if let Some(transformed_stmt) = self.handle_nested(
                                     {
                                         // SAFETY: `ast.copy` is unsound! We need to fix.
-                                        unsafe { ctx.ast.copy(decl) }
+                                        unsafe { ctx.ast.copy(decl).unbox() }
                                     },
                                     None,
                                     ctx,

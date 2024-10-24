@@ -8,7 +8,7 @@
 
 use std::mem;
 
-use oxc_allocator::{Allocator, Box, FromIn, String, Vec};
+use oxc_allocator::{Allocator, Box, CloneIn, FromIn, String, Vec};
 use oxc_span::{Atom, GetSpan, Span};
 use oxc_syntax::{number::NumberBase, operator::UnaryOperator};
 
@@ -87,9 +87,9 @@ impl<'a> AstBuilder<'a> {
     /// <https://github.com/oxc-project/oxc/issues/3483>
     #[allow(clippy::missing_safety_doc)]
     #[inline]
-    pub unsafe fn copy<T>(self, src: &T) -> T {
+    pub unsafe fn copy<T: CloneIn<'a>>(self, src: &T) -> T::Cloned {
         // SAFETY: Not safe (see above)
-        unsafe { std::mem::transmute_copy(src) }
+        src.clone_in(self.allocator)
     }
 
     /// Moves the expression out by replacing it with a [null
