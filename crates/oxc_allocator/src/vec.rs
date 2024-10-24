@@ -851,7 +851,7 @@ impl<'alloc, T> ops::DerefMut for Vec<'alloc, T> {
 /// let v = Vec::from_iter_in([0, 1, 2], &allocator);
 /// let iter: std::vec::IntoIter<_> = v.into_iter();
 /// ```
-pub struct IntoIter<'alloc, T>(IntoIterImpl<'alloc, T>);
+pub struct IntoIter<'alloc, T>(ManuallyDrop<IntoIterImpl<'alloc, T>>);
 
 impl<T> IntoIter<'_, T> {
     /// Returns the remaining items of this iterator as a slice.
@@ -884,7 +884,7 @@ impl<T> Iterator for IntoIter<'_, T> {
 
     #[inline(always)]
     fn count(self) -> usize {
-        self.0.count()
+        self.len()
     }
 }
 
@@ -913,7 +913,7 @@ impl<'alloc, T> IntoIterator for Vec<'alloc, T> {
         let inner = ManuallyDrop::into_inner(self.0);
         // TODO: `allocator_api2::vec::Vec::IntoIter` is `Drop`.
         // Wrap it in `ManuallyDrop` to prevent that.
-        IntoIter(inner.into_iter())
+        IntoIter(ManuallyDrop::new(inner.into_iter()))
     }
 }
 
