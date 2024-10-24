@@ -545,7 +545,7 @@ impl<'a> Codegen<'a> {
             if let Some(reference_id) = reference.reference_id.get() {
                 if let Some(name) = mangler.get_reference_name(reference_id) {
                     // SAFETY: Hack the lifetime to be part of the allocator.
-                    return unsafe { std::mem::transmute_copy(&name) };
+                    return unsafe { transmute_lifetime(&name) };
                 }
             }
         }
@@ -557,7 +557,7 @@ impl<'a> Codegen<'a> {
             if let Some(symbol_id) = ident.symbol_id.get() {
                 let name = mangler.get_symbol_name(symbol_id);
                 // SAFETY: Hack the lifetime to be part of the allocator.
-                return unsafe { std::mem::transmute_copy(&name) };
+                return unsafe { transmute_lifetime(name) };
             }
         }
         ident.name.as_str()
@@ -691,4 +691,8 @@ impl<'a> Codegen<'a> {
             sourcemap_builder.add_source_mapping_for_name(self.code.as_bytes(), span, name);
         }
     }
+}
+
+unsafe fn transmute_lifetime<'a, 'b>(a: &'a str) -> &'b str {
+    &*(a as *const str)
 }
