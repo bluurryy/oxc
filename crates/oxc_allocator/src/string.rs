@@ -1,3 +1,5 @@
+use std::mem::ManuallyDrop;
+
 use crate::{Allocator, BUMP_UPWARDS, MINIMUM_ALIGNMENT};
 
 use allocator_api2::alloc::Global;
@@ -7,32 +9,32 @@ use serde::{Serialize, Serializer};
 type StringImpl<'a> = bump_scope::BumpString<'a, 'a, Global, MINIMUM_ALIGNMENT, BUMP_UPWARDS>;
 
 /// A bump-allocated string.
-pub struct String<'a>(StringImpl<'a>);
+pub struct String<'a>(ManuallyDrop<StringImpl<'a>>);
 
 impl<'a> String<'a> {
     /// Constructs a new empty `String`.
     #[inline(always)]
     pub fn new_in(allocator: &'a Allocator) -> Self {
-        Self(StringImpl::new_in(&allocator.bump))
+        Self(ManuallyDrop::new(StringImpl::new_in(&allocator.bump)))
     }
 
     /// Constructs a `String` from a `&str`.
     #[inline(always)]
     pub fn from_str_in(string: &str, allocator: &'a Allocator) -> Self {
-        Self(StringImpl::from_str_in(string, &allocator.bump))
+        Self(ManuallyDrop::new(StringImpl::from_str_in(string, &allocator.bump)))
     }
 
     /// Constructs a new empty `String` with the specified capacity.
     #[inline(always)]
     pub fn with_capacity_in(capacity: usize, allocator: &'a Allocator) -> Self {
-        Self(StringImpl::with_capacity_in(capacity, &allocator.bump))
+        Self(ManuallyDrop::new(StringImpl::with_capacity_in(capacity, &allocator.bump)))
     }
 
     /// Converts a `String` into a `&str`.
     #[inline(always)]
     pub fn into_bump_str(self) -> &'a str {
         // First converts it to a `FixedBumpString` to suppress it trying to shrink its allocation.
-        self.0.into_fixed_string().into_str()
+        ManuallyDrop::into_inner(self.0).into_fixed_string().into_str()
     }
 
     /// Appends a given string slice to the end of this string.
