@@ -18,12 +18,15 @@ use std::{
 
 use oxc::{
     span::SourceType,
-    transformer::{CompilerAssumptions, TransformOptions, TypeScriptOptions},
+    transformer::{
+        CompilerAssumptions, ES2015Options, JsxOptions, TransformOptions, TypeScriptOptions,
+    },
+    CompilerInterface as _,
 };
 use oxc_tasks_common::project_root;
 use rayon::ThreadPoolBuilder;
 use runtime::Test262RuntimeCase;
-use suite::Case as _;
+use suite::{Case as _, TestResult};
 
 use crate::{
     babel::{BabelCase, BabelSuite},
@@ -189,7 +192,8 @@ fn cov(suite: &mut TypeScriptSuite<SemanticTypeScriptCase>, name: &str, args: &A
 #[inline(never)]
 pub fn debug2() {
     let source_path = Path::new("typescript/tests/cases/compiler/genericClassWithStaticFactory.ts");
-    let source_text = include_str!("../TEST_ME.ts");
+    let source_text =
+        include_str!("../typescript/tests/cases/compiler/genericClassWithStaticFactory.ts");
     let source_type = SourceType::ts().with_unambiguous(true);
     let options = None;
 
