@@ -20,7 +20,7 @@ use oxc_tasks_transform_checker::{check_semantic_after_transform, check_semantic
 use crate::suite::TestResult;
 
 #[expect(clippy::struct_excessive_bools)]
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Driver {
     pub path: PathBuf,
     // options

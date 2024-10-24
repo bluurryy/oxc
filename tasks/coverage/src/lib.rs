@@ -11,10 +11,19 @@ mod typescript;
 mod driver;
 mod tools;
 
-use std::{path::PathBuf, process::Command};
+use std::{
+    path::{Path, PathBuf},
+    process::Command,
+};
 
+use oxc::{
+    span::SourceType,
+    transformer::{CompilerAssumptions, TransformOptions, TypeScriptOptions},
+};
 use oxc_tasks_common::project_root;
+use rayon::ThreadPoolBuilder;
 use runtime::Test262RuntimeCase;
+use suite::Case as _;
 
 use crate::{
     babel::{BabelCase, BabelSuite},
@@ -131,4 +140,59 @@ impl AppArgs {
 #[cfg(any(coverage, coverage_nightly))]
 fn test() {
     AppArgs::default().run_default()
+}
+
+pub fn debug() {
+    let args = AppArgs {
+        debug: true,
+        filter: Some("genericClassWithStaticFactory.ts".into()),
+        detail: true,
+        diff: false,
+    };
+
+    if args.debug {
+        ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
+    }
+
+    // let what = "typescript/tests/cases";
+    // let test_path = workspace_root();
+    let name = "semantic_typescript";
+
+    let mut suite = MySuite::new();
+    read(&mut suite, name, &args);
+    run(&mut suite, name, &args);
+    // cov(&mut suite, name, &args);
+}
+
+type MySuite = TypeScriptSuite<SemanticTypeScriptCase>;
+
+#[inline(never)]
+fn read(suite: &mut TypeScriptSuite<SemanticTypeScriptCase>, name: &str, args: &AppArgs) {
+    suite.read_test_cases(name, &args);
+}
+
+#[inline(never)]
+fn run(suite: &mut TypeScriptSuite<SemanticTypeScriptCase>, _name: &str, args: &AppArgs) {
+    for case in suite.get_test_cases_mut() {
+        if args.debug {
+            println!("{}", case.path().to_string_lossy());
+        }
+        case.run();
+    }
+}
+
+#[inline(never)]
+fn cov(suite: &mut TypeScriptSuite<SemanticTypeScriptCase>, name: &str, args: &AppArgs) {
+    suite.run_coverage(name, args);
+}
+
+#[inline(never)]
+pub fn debug2() {
+    let source_path = Path::new("typescript/tests/cases/compiler/genericClassWithStaticFactory.ts");
+    let source_text = include_str!("../TEST_ME.ts");
+    let source_type = SourceType::ts().with_unambiguous(true);
+    let options = None;
+
+    let result = tools::semantic::get_result(source_text, source_type, source_path, options);
+    dbg!(result);
 }

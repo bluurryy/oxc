@@ -120,7 +120,7 @@ pub trait Suite<T: Case> {
 
         // read all files, run the tests and save them
         let cases = paths
-            .into_par_iter()
+            .into_iter()
             .map(|path| {
                 let code = fs::read_to_string(&path).unwrap_or_else(|_| {
                     // TypeScript tests may contain utf_16 encoding files

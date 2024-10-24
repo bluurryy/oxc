@@ -29,7 +29,7 @@ fn get_default_transformer_options() -> TransformOptions {
 }
 
 /// Idempotency test
-fn get_result(
+pub fn get_result(
     source_text: &str,
     source_type: SourceType,
     source_path: &Path,
