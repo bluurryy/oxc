@@ -1,7 +1,7 @@
 #![allow(clippy::print_stdout, clippy::print_stderr, clippy::disallowed_methods)]
 // Core
 mod runtime;
-mod suite;
+pub mod suite;
 // Suites
 mod babel;
 mod misc;
@@ -16,7 +16,7 @@ use std::{path::PathBuf, process::Command};
 use oxc_tasks_common::project_root;
 use runtime::Test262RuntimeCase;
 
-use crate::{
+pub use crate::{
     babel::{BabelCase, BabelSuite},
     driver::Driver,
     misc::{MiscCase, MiscSuite},
