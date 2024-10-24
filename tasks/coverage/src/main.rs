@@ -1,3 +1,3 @@
 fn main() {
-    oxc_coverage::debug2();
+    oxc_coverage::debug3();
 }

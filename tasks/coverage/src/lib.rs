@@ -190,9 +190,22 @@ fn cov(suite: &mut TypeScriptSuite<SemanticTypeScriptCase>, name: &str, args: &A
 pub fn debug2() {
     let source_path = Path::new("typescript/tests/cases/compiler/genericClassWithStaticFactory.ts");
     let source_text = include_str!("../TEST_ME.ts");
+    // let source_text = std::fs::read_to_string("TEST_ME.ts").unwrap();
+    // let source_text = source_text.as_str();
     let source_type = SourceType::ts().with_unambiguous(true);
     let options = None;
 
     let result = tools::semantic::get_result(source_text, source_type, source_path, options);
+    dbg!(result);
+}
+
+#[inline(never)]
+pub fn debug3() {
+    let source_path = Path::new("typescript/tests/cases/compiler/genericClassWithStaticFactory.ts");
+    let source_text = include_str!("../TEST_ME.ts");
+    let source_type = SourceType::ts().with_unambiguous(true);
+
+    let mut compiler = oxc::Compiler::default();
+    let result = compiler.execute(source_text, source_type, source_path);
     dbg!(result);
 }
