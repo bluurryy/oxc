@@ -39,15 +39,7 @@
 //! assert!(parsed.errors.is_empty());
 //! ```
 #![warn(missing_docs)]
-use std::{
-    convert::From,
-    ops::{Deref, DerefMut},
-};
-
-use bump_scope::Bump;
-
-/// A bump-allocated string.
-type BumpScope<'a> = bump_scope::BumpScope<'a>;
+use allocator_api2::alloc::Global;
 
 mod address;
 mod boxed;
@@ -63,6 +55,13 @@ pub use convert::{FromIn, IntoIn};
 pub use string::String;
 pub use vec::Vec;
 
+const BUMP_UPWARDS: bool = true;
+const MINIMUM_ALIGNMENT: usize = 1;
+
+type BumpImpl = bump_scope::Bump<Global, MINIMUM_ALIGNMENT, BUMP_UPWARDS>;
+type VecImpl<'a, T> = bump_scope::BumpVec<'a, 'a, T, Global, MINIMUM_ALIGNMENT, BUMP_UPWARDS>;
+type StringImpl<'a> = bump_scope::BumpString<'a, 'a, Global, MINIMUM_ALIGNMENT, BUMP_UPWARDS>;
+
 /// A bump-allocated memory arena based on [bump-scope].
 ///
 /// ## No `Drop`s
@@ -72,50 +71,17 @@ pub use vec::Vec;
 /// easy to leak memory or other resources.
 #[derive(Default)]
 pub struct Allocator {
-    bump: Bump,
+    bump: BumpImpl,
 }
 
-impl<'a> From<&'a Allocator> for &'a BumpScope<'a> {
-    fn from(value: &'a Allocator) -> Self {
-        value.bump.as_scope()
+impl Allocator {
+    /// Allocate a string slice.
+    pub fn alloc_str(&self, s: &str) -> &mut str {
+        self.bump.alloc_str(s).into_mut()
     }
-}
 
-impl From<Bump> for Allocator {
-    fn from(bump: Bump) -> Self {
-        Self { bump }
-    }
-}
-
-impl Deref for Allocator {
-    type Target = Bump;
-
-    fn deref(&self) -> &Self::Target {
-        &self.bump
-    }
-}
-
-impl DerefMut for Allocator {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.bump
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use std::ops::Deref;
-
-    use bump_scope::Bump;
-
-    use crate::Allocator;
-
-    #[test]
-    fn test_api() {
-        let bump = Bump::new();
-        let allocator: Allocator = bump.into();
-        #[allow(clippy::explicit_deref_methods)]
-        {
-            _ = allocator.deref();
-        }
+    /// Deallocates every chunk but the newest, which is also the biggest.
+    pub fn reset(&mut self) {
+        self.bump.reset();
     }
 }
