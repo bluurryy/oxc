@@ -3,7 +3,7 @@ mod transpile_runner;
 
 use std::path::{Path, PathBuf};
 
-use self::meta::{CompilerSettings, TestCaseContent, TestUnitData};
+pub use self::meta::{CompilerSettings, TestCaseContent, TestUnitData};
 pub use self::transpile_runner::{TranspileRunner, TypeScriptTranspileCase};
 use crate::suite::{Case, Suite, TestResult};
 

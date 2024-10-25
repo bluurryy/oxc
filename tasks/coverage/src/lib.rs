@@ -6,7 +6,7 @@ pub mod suite;
 mod babel;
 mod misc;
 mod test262;
-mod typescript;
+pub mod typescript;
 
 mod driver;
 mod tools;

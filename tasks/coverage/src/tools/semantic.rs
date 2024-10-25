@@ -120,7 +120,7 @@ impl Case for SemanticBabelCase {
 }
 
 pub struct SemanticTypeScriptCase {
-    base: TypeScriptCase,
+    pub base: TypeScriptCase,
 }
 
 impl Case for SemanticTypeScriptCase {
