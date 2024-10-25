@@ -112,7 +112,7 @@ impl<'a> ModuleLexer<'a> {
     }
 
     #[must_use]
-    pub fn build(mut self, program: &Program<'a>) -> Self {
+    pub fn build(mut self, program: &'a Program<'a>) -> Self {
         self.visit_program(program);
         self
     }

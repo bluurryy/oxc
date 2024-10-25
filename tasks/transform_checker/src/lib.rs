@@ -632,7 +632,7 @@ impl<'a, 'e> SemanticIdsCollector<'a, 'e> {
     #[expect(clippy::type_complexity)]
     fn collect(
         mut self,
-        program: &Program<'a>,
+        program: &'a Program<'a>,
     ) -> (Vec<Option<ScopeId>>, Vec<Option<SymbolId>>, Vec<Option<ReferenceId>>, Vec<Atom<'a>>)
     {
         if !program.source_type.is_typescript_definition() {

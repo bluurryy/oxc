@@ -279,7 +279,8 @@ impl Runtime {
             }
         }
 
-        let semantic_ret = semantic_builder.build(&ret.program);
+        let program = allocator.alloc(ret.program);
+        let semantic_ret = semantic_builder.build(program);
 
         if !semantic_ret.errors.is_empty() {
             return semantic_ret.errors.into_iter().map(|err| Message::new(err, None)).collect();

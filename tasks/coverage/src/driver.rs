@@ -82,7 +82,7 @@ impl CompilerInterface for Driver {
 
     fn after_semantic(
         &mut self,
-        program: &mut Program<'_>,
+        program: &Program<'_>,
         ret: &mut SemanticBuilderReturn,
     ) -> ControlFlow<()> {
         if self.check_semantic {
