@@ -150,7 +150,7 @@ impl<'a> SemanticTester<'a> {
     /// # Panics
     ///
     #[allow(unstable_name_collisions)]
-    pub fn build_with_errors(&self) -> SemanticBuilderReturn<'_> {
+    pub fn build_with_errors(&self) -> SemanticBuilderReturn<'_, '_> {
         let parse =
             oxc_parser::Parser::new(&self.allocator, self.source_text, self.source_type).parse();
 
@@ -166,11 +166,13 @@ impl<'a> SemanticTester<'a> {
                 .collect::<String>()
         );
 
+        let program = self.allocator.alloc(parse.program);
+
         SemanticBuilder::new()
             .with_check_syntax_error(true)
             .with_cfg(self.cfg)
             .with_scope_tree_child_ids(self.scope_tree_child_ids)
-            .build(&parse.program)
+            .build(program)
     }
 
     pub fn basic_blocks_count(&self) -> usize {

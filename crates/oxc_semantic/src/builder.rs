@@ -2,6 +2,7 @@
 
 use std::{
     cell::{Cell, RefCell},
+    marker::PhantomData,
     path::Path,
     sync::Arc,
 };
@@ -111,9 +112,10 @@ pub struct SemanticBuilder<'a> {
 }
 
 /// Data returned by [`SemanticBuilder::build`].
-pub struct SemanticBuilderReturn<'a> {
+pub struct SemanticBuilderReturn<'a, 'p> {
     pub semantic: Semantic<'a>,
     pub errors: Vec<OxcDiagnostic>,
+    marker: PhantomData<&'p Program<'a>>,
 }
 
 impl<'a> Default for SemanticBuilder<'a> {
@@ -244,7 +246,7 @@ impl<'a> SemanticBuilder<'a> {
     /// Finalize the builder.
     ///
     /// # Panics
-    pub fn build(mut self, program: &Program<'a>) -> SemanticBuilderReturn<'a> {
+    pub fn build<'p>(mut self, program: &'p Program<'a>) -> SemanticBuilderReturn<'a, 'p> {
         self.source_text = program.source_text;
         self.source_type = program.source_type;
         if self.build_jsdoc {
@@ -325,7 +327,7 @@ impl<'a> SemanticBuilder<'a> {
             unused_labels: self.unused_labels.labels,
             cfg: self.cfg.map(ControlFlowGraphBuilder::build),
         };
-        SemanticBuilderReturn { semantic, errors: self.errors.into_inner() }
+        SemanticBuilderReturn { semantic, errors: self.errors.into_inner(), marker: PhantomData }
     }
 
     /// Push a Syntax Error
