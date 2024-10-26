@@ -166,11 +166,13 @@ impl<'a> SemanticTester<'a> {
                 .collect::<String>()
         );
 
+        let program = self.allocator.alloc(parse.program);
+
         SemanticBuilder::new()
             .with_check_syntax_error(true)
             .with_cfg(self.cfg)
             .with_scope_tree_child_ids(self.scope_tree_child_ids)
-            .build(&parse.program)
+            .build(program)
     }
 
     pub fn basic_blocks_count(&self) -> usize {
