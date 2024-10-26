@@ -128,7 +128,7 @@ base64 = "0.22.1"
 base64-simd = "0.8"
 bitflags = "2.6.0"
 bpaf = "0.9.15"
-bump-scope = { version = "0.10.5", features = ["debug-log"], path = "../bump-scope" }
+bump-scope = { version = "0.10.5", path = "../bump-scope" }
 cfg-if = "1.0.0"
 compact_str = "0.8.0"
 console = "0.15.8"

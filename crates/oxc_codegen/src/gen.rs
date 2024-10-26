@@ -668,6 +668,8 @@ impl<'a> Gen for FunctionBody<'a> {
             }
             for stmt in &self.statements {
                 p.print_semicolon_if_needed();
+                dbg!(std::str::from_utf8(p.code.as_bytes()).unwrap());
+                dbg!(stmt);
                 stmt.print(p, ctx);
             }
         });

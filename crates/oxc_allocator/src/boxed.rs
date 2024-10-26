@@ -105,6 +105,11 @@ impl<'alloc, T: ?Sized> ops::Deref for Box<'alloc, T> {
     type Target = T;
 
     fn deref(&self) -> &T {
+        eprintln!(
+            "deref: ptr=0x{:x} type={}",
+            self.0.as_ptr().cast::<u8>() as usize,
+            std::any::type_name::<T>()
+        );
         // SAFETY: self.0 is always a unique reference allocated from a Bump in Box::new_in
         unsafe { self.0.as_ref() }
     }
@@ -112,6 +117,11 @@ impl<'alloc, T: ?Sized> ops::Deref for Box<'alloc, T> {
 
 impl<'alloc, T: ?Sized> ops::DerefMut for Box<'alloc, T> {
     fn deref_mut(&mut self) -> &mut T {
+        eprintln!(
+            "deref: ptr=0x{:x} type={} mut",
+            self.0.as_ptr().cast::<u8>() as usize,
+            std::any::type_name::<T>()
+        );
         // SAFETY: self.0 is always a unique reference allocated from a Bump in Box::new_in
         unsafe { self.0.as_mut() }
     }
